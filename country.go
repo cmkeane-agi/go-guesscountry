@@ -1,7 +1,8 @@
-package goguesscountry
+package goguessocuntry
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 	"sort"
 	"strings"
@@ -158,7 +159,7 @@ var goguesscountries = []Country{
 	{Name: "Eq. Guinea", FormalName: "Republic of Equatorial Guinea", Abbrev: "Eq. G.", NameAlt: "", Population: 1355986, GDP: 11026, ISO2: "GQ", ISO3: "GNQ", Continent: "Africa", RegionUN: "Africa", Subregion: "Middle Africa", RegionWB: "Sub-Saharan Africa", LabelX: 8.9902, LabelY: 2.333},
 	{Name: "Gambia", FormalName: "Republic of the Gambia", Abbrev: "Gambia", NameAlt: "", Population: 2347706, GDP: 1826, ISO2: "GM", ISO3: "GMB", Continent: "Africa", RegionUN: "Africa", Subregion: "Western Africa", RegionWB: "Sub-Saharan Africa", LabelX: -14.998318, LabelY: 13.641721},
 	{Name: "Madagascar", FormalName: "Republic of Madagascar", Abbrev: "Mad.", NameAlt: "", Population: 26969307, GDP: 14114, ISO2: "MG", ISO3: "MDG", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 46.704241, LabelY: -18.628288},
-	{Name: "France", FormalName: "French Republic", Abbrev: "Fr.", NameAlt: "", Population: 67059887, GDP: 2715518, ISO2: "-99", ISO3: "-99", Continent: "Europe", RegionUN: "Europe", Subregion: "Western Europe", RegionWB: "Europe & Central Asia", LabelX: 2.552275, LabelY: 46.696113},
+	{Name: "France", FormalName: "French Republic", Abbrev: "Fr.", NameAlt: "", Population: 67059887, GDP: 2715518, ISO2: "FR", ISO3: "FRA", Continent: "Europe", RegionUN: "Europe", Subregion: "Western Europe", RegionWB: "Europe & Central Asia", LabelX: 2.552275, LabelY: 46.696113},
 	{Name: "Ukraine", FormalName: "Ukraine", Abbrev: "Ukr.", NameAlt: "", Population: 44385155, GDP: 153781, ISO2: "UA", ISO3: "UKR", Continent: "Europe", RegionUN: "Europe", Subregion: "Eastern Europe", RegionWB: "Europe & Central Asia", LabelX: 32.140865, LabelY: 49.724739},
 	{Name: "Belarus", FormalName: "Republic of Belarus", Abbrev: "Bela.", NameAlt: "", Population: 9466856, GDP: 63080, ISO2: "BY", ISO3: "BLR", Continent: "Europe", RegionUN: "Europe", Subregion: "Eastern Europe", RegionWB: "Europe & Central Asia", LabelX: 28.417701, LabelY: 53.821888},
 	{Name: "Lithuania", FormalName: "Republic of Lithuania", Abbrev: "Lith.", NameAlt: "", Population: 2786844, GDP: 54627, ISO2: "LT", ISO3: "LTU", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 24.089932, LabelY: 55.103703},
@@ -167,7 +168,7 @@ var goguesscountries = []Country{
 	{Name: "Germany", FormalName: "Federal Republic of Germany", Abbrev: "Ger.", NameAlt: "", Population: 83132799, GDP: 3861123, ISO2: "DE", ISO3: "DEU", Continent: "Europe", RegionUN: "Europe", Subregion: "Western Europe", RegionWB: "Europe & Central Asia", LabelX: 9.678348, LabelY: 50.961733},
 	{Name: "Estonia", FormalName: "Republic of Estonia", Abbrev: "Est.", NameAlt: "", Population: 1326590, GDP: 31471, ISO2: "EE", ISO3: "EST", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 25.867126, LabelY: 58.724865},
 	{Name: "Latvia", FormalName: "Republic of Latvia", Abbrev: "Lat.", NameAlt: "", Population: 1912789, GDP: 34102, ISO2: "LV", ISO3: "LVA", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 25.458723, LabelY: 57.066872},
-	{Name: "Norway", FormalName: "Kingdom of Norway", Abbrev: "Nor.", NameAlt: "", Population: 5347896, GDP: 403336, ISO2: "-99", ISO3: "-99", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 9.679975, LabelY: 61.357092},
+	{Name: "Norway", FormalName: "Kingdom of Norway", Abbrev: "Nor.", NameAlt: "", Population: 5347896, GDP: 403336, ISO2: "NO", ISO3: "NOR", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 9.679975, LabelY: 61.357092},
 	{Name: "Sweden", FormalName: "Kingdom of Sweden", Abbrev: "Swe.", NameAlt: "", Population: 10285453, GDP: 530883, ISO2: "SE", ISO3: "SWE", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 19.01705, LabelY: 65.85918},
 	{Name: "Finland", FormalName: "Republic of Finland", Abbrev: "Fin.", NameAlt: "", Population: 5520314, GDP: 269296, ISO2: "FI", ISO3: "FIN", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: 27.276449, LabelY: 63.252361},
 	{Name: "Luxembourg", FormalName: "Grand Duchy of Luxembourg", Abbrev: "Lux.", NameAlt: "", Population: 619896, GDP: 71104, ISO2: "LU", ISO3: "LUX", Continent: "Europe", RegionUN: "Europe", Subregion: "Western Europe", RegionWB: "Europe & Central Asia", LabelX: 6.07762, LabelY: 49.733732},
@@ -205,12 +206,74 @@ var goguesscountries = []Country{
 	{Name: "Solomon Is.", FormalName: "", Abbrev: "S. Is.", NameAlt: "", Population: 669823, GDP: 1589, ISO2: "SB", ISO3: "SLB", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Melanesia", RegionWB: "East Asia & Pacific", LabelX: 159.170468, LabelY: -8.029548},
 	{Name: "Vanuatu", FormalName: "Republic of Vanuatu", Abbrev: "Van.", NameAlt: "", Population: 299882, GDP: 934, ISO2: "VU", ISO3: "VUT", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Melanesia", RegionWB: "East Asia & Pacific", LabelX: 166.908762, LabelY: -15.37153},
 	{Name: "Antarctica", FormalName: "", Abbrev: "Ant.", NameAlt: "", Population: 4490, GDP: 898, ISO2: "AQ", ISO3: "ATA", Continent: "Antarctica", RegionUN: "Antarctica", Subregion: "Antarctica", RegionWB: "Antarctica", LabelX: 35.885455, LabelY: -79.843222},
-	{Name: "Fr. S. Antarctic Lands", FormalName: "Territory of the French Southern and Antarctic Lands", Abbrev: "Fr. S.A.L.", NameAlt: "", Population: 140, GDP: 16, ISO2: "TF", ISO3: "ATF", Continent: "Seven seas (open ocean)", RegionUN: "Africa", Subregion: "Seven seas (open ocean)", RegionWB: "Sub-Saharan Africa", LabelX: 69.122136, LabelY: -49.303721}}
+	{Name: "Fr. S. Antarctic Lands", FormalName: "Territory of the French Southern and Antarctic Lands", Abbrev: "Fr. S.A.L.", NameAlt: "", Population: 140, GDP: 16, ISO2: "TF", ISO3: "ATF", Continent: "Seven seas (open ocean)", RegionUN: "Africa", Subregion: "Seven seas (open ocean)", RegionWB: "Sub-Saharan Africa", LabelX: 69.122136, LabelY: -49.303721},
+	{Name: "Rest of World", FormalName: "Rest of World", Abbrev: "RoW", NameAlt: "", Population: 0, GDP: 0, ISO2: "ZZ", ISO3: "ZZZ", Continent: "Seven seas (open ocean)", RegionUN: "Seven seas (open ocean)", Subregion: "Seven seas (open ocean)", RegionWB: "Sub-Saharan Africa", LabelX: 0, LabelY: 0},
+	{Name: "Singapore", FormalName: "Republic of Singapore", Abbrev: "Sing.", NameAlt: "", Population: 5850342, GDP: 364134, ISO2: "SG", ISO3: "SGP", Continent: "Asia", RegionUN: "Asia", Subregion: "South-Eastern Asia", RegionWB: "East Asia & Pacific", LabelX: 103.819836, LabelY: 1.352083},
+	{Name: "Mauritius", FormalName: "Republic of Mauritius", Abbrev: "Maur.", NameAlt: "", Population: 1265985, GDP: 14100, ISO2: "MU", ISO3: "MUS", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 57.552152, LabelY: -20.348404},
+	{Name: "Malta", FormalName: "Republic of Malta", Abbrev: "Malta", NameAlt: "", Population: 514564, GDP: 14495, ISO2: "MT", ISO3: "MLT", Continent: "Europe", RegionUN: "Europe", Subregion: "Southern Europe", RegionWB: "Europe & Central Asia", LabelX: 14.375416, LabelY: 35.937496},
+	{Name: "Cabo Verde", FormalName: "Republic of Cabo Verde", Abbrev: "C.V.", NameAlt: "", Population: 555987, GDP: 1683, ISO2: "CV", ISO3: "CPV", Continent: "Africa", RegionUN: "Africa", Subregion: "Western Africa", RegionWB: "Sub-Saharan Africa", LabelX: -23.0418, LabelY: 16.5388},
+	{Name: "Hong Kong", FormalName: "Hong Kong", Abbrev: "H.K.", NameAlt: "", Population: 7451000, GDP: 366152, ISO2: "HK", ISO3: "HKG", Continent: "Asia", RegionUN: "Asia", Subregion: "Eastern Asia", RegionWB: "East Asia & Pacific", LabelX: 114.109497, LabelY: 22.396428},
+	{Name: "Andorra", FormalName: "Principality of Andorra", Abbrev: "And.", NameAlt: "", Population: 77265, GDP: 3013, ISO2: "AD", ISO3: "AND", Continent: "Europe", RegionUN: "Europe", Subregion: "Southern Europe", RegionWB: "Europe & Central Asia", LabelX: 1.521801, LabelY: 42.546245},
+	{Name: "Anguilla", FormalName: "Anguilla", Abbrev: "Ang.", NameAlt: "", Population: 15002, GDP: 337, ISO2: "AI", ISO3: "AIA", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -63.068615, LabelY: 18.220554},
+	{Name: "Sao Tome and Principe", FormalName: "Democratic Republic of Sao Tome and Principe", Abbrev: "S.T.P.", NameAlt: "", Population: 211028, GDP: 372, ISO2: "ST", ISO3: "STP", Continent: "Africa", RegionUN: "Africa", Subregion: "Middle Africa", RegionWB: "Sub-Saharan Africa", LabelX: 6.613081, LabelY: 0.18636},
+	{Name: "Netherlands Antilles", FormalName: "Netherlands Antilles", Abbrev: "Neth. A.", NameAlt: "", Population: 0, GDP: 0, ISO2: "AN", ISO3: "ANT", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -68.971535, LabelY: 12.52088},
+	{Name: "Antigua and Barbuda", FormalName: "Antigua and Barbuda", Abbrev: "A.B.", NameAlt: "", Population: 97929, GDP: 1531, ISO2: "AG", ISO3: "ATG", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.796428, LabelY: 17.060816},
+	{Name: "Aruba", FormalName: "Aruba", Abbrev: "Aruba", NameAlt: "", Population: 106766, GDP: 2930, ISO2: "AW", ISO3: "ABW", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -69.968338, LabelY: 12.52111},
+	{Name: "Barbados", FormalName: "Barbados", Abbrev: "Barb.", NameAlt: "", Population: 287025, GDP: 4713, ISO2: "BB", ISO3: "BRB", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -59.559797, LabelY: 13.193887},
+	{Name: "Bermuda", FormalName: "Bermuda", Abbrev: "Berm.", NameAlt: "", Population: 63918, GDP: 6267, ISO2: "BM", ISO3: "BMU", Continent: "Americas", RegionUN: "Americas", Subregion: "Northern America", RegionWB: "North America", LabelX: -64.754559, LabelY: 32.313678},
+	{Name: "Bahrain", FormalName: "Kingdom of Bahrain", Abbrev: "Bahr.", NameAlt: "", Population: 1641172, GDP: 35289, ISO2: "BH", ISO3: "BHR", Continent: "Asia", RegionUN: "Asia", Subregion: "Western Asia", RegionWB: "Middle East & North Africa", LabelX: 50.541969, LabelY: 26.0667},
+	{Name: "Cook Islands", FormalName: "Cook Islands", Abbrev: "C. Is.", NameAlt: "", Population: 17548, GDP: 311, ISO2: "CK", ISO3: "COK", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: -159.777671, LabelY: -21.236736},
+	{Name: "Dominica", FormalName: "Commonwealth of Dominica", Abbrev: "Dom.", NameAlt: "", Population: 71986, GDP: 520, ISO2: "DM", ISO3: "DMA", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.370976, LabelY: 15.414999},
+	{Name: "Federated States of Micronesia", FormalName: "Federated States of Micronesia", Abbrev: "F.S.M.", NameAlt: "", Population: 113815, GDP: 333, ISO2: "FM", ISO3: "FSM", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Micronesia", RegionWB: "East Asia & Pacific", LabelX: 158.215071, LabelY: 6.924757},
+	{Name: "Grenada", FormalName: "Grenada", Abbrev: "Gren.", NameAlt: "", Population: 112003, GDP: 1111, ISO2: "GD", ISO3: "GRD", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.604171, LabelY: 12.1165},
+	{Name: "French Guiana", FormalName: "French Guiana", Abbrev: "Fr. G.", NameAlt: "", Population: 290691, GDP: 0, ISO2: "GF", ISO3: "GUF", Continent: "Americas", RegionUN: "Americas", Subregion: "South America", RegionWB: "Latin America & Caribbean", LabelX: -53.125782, LabelY: 3.933889},
+	{Name: "Guadeloupe", FormalName: "Guadeloupe", Abbrev: "Guad.", NameAlt: "", Population: 395700, GDP: 0, ISO2: "GP", ISO3: "GLP", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.534042, LabelY: 16.264727},
+	{Name: "Kiribati", FormalName: "Republic of Kiribati", Abbrev: "Kir.", NameAlt: "", Population: 119449, GDP: 196, ISO2: "KI", ISO3: "KIR", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Micronesia", RegionWB: "East Asia & Pacific", LabelX: -45.611105, LabelY: 0.860015},
+	{Name: "Comoros", FormalName: "Union of the Comoros", Abbrev: "Com.", NameAlt: "", Population: 850886, GDP: 658, ISO2: "KM", ISO3: "COM", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 43.872219, LabelY: -11.875001},
+	{Name: "St. Kitts and Nevis", FormalName: "Federation of Saint Kitts and Nevis", Abbrev: "St. K.N.", NameAlt: "", Population: 53199, GDP: 932, ISO2: "KN", ISO3: "KNA", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -62.782998, LabelY: 17.357822},
+	{Name: "Cayman Is.", FormalName: "Cayman Islands", Abbrev: "Cay. Is.", NameAlt: "", Population: 65722, GDP: 3116, ISO2: "KY", ISO3: "CYM", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -81.2546, LabelY: 19.3133},
+	{Name: "St. Lucia", FormalName: "Saint Lucia", Abbrev: "St. L.", NameAlt: "", Population: 182790, GDP: 1549, ISO2: "LC", ISO3: "LCA", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -60.978893, LabelY: 13.909444},
+	{Name: "Macau", FormalName: "Macau", Abbrev: "Macau", NameAlt: "", Population: 631636, GDP: 0, ISO2: "MO", ISO3: "MAC", Continent: "Asia", RegionUN: "Asia", Subregion: "Eastern Asia", RegionWB: "East Asia & Pacific", LabelX: 113.543873, LabelY: 22.198745},
+	{Name: "Martinique", FormalName: "Martinique", Abbrev: "Mart.", NameAlt: "", Population: 375265, GDP: 0, ISO2: "MQ", ISO3: "MTQ", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.024174, LabelY: 14.641528},
+	{Name: "Montserrat", FormalName: "Montserrat", Abbrev: "Monts.", NameAlt: "", Population: 5900, GDP: 0, ISO2: "MS", ISO3: "MSR", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -62.187366, LabelY: 16.742498},
+	{Name: "The Maldives", FormalName: "Republic of Maldives", Abbrev: "Mald.", NameAlt: "", Population: 530953, GDP: 0, ISO2: "MV", ISO3: "MDV", Continent: "Asia", RegionUN: "Asia", Subregion: "Southern Asia", RegionWB: "South Asia", LabelX: 73.22068, LabelY: 3.202778},
+	{Name: "French Polynesia", FormalName: "French Polynesia", Abbrev: "Fr. P.", NameAlt: "", Population: 280208, GDP: 0, ISO2: "PF", ISO3: "PYF", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: -149.406843, LabelY: -17.679742},
+	{Name: "Palau", FormalName: "Republic of Palau", Abbrev: "Pal.", NameAlt: "", Population: 17907, GDP: 0, ISO2: "PW", ISO3: "PLW", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Micronesia", RegionWB: "East Asia & Pacific", LabelX: 134.58252, LabelY: 7.51498},
+	{Name: "Reunion", FormalName: "Reunion", Abbrev: "Reun.", NameAlt: "", Population: 859959, GDP: 0, ISO2: "RE", ISO3: "REU", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 55.536384, LabelY: -21.115141},
+	{Name: "Seycheles", FormalName: "Republic of Seychelles", Abbrev: "Sey.", NameAlt: "", Population: 96762, GDP: 0, ISO2: "SC", ISO3: "SYC", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 55.491977, LabelY: -4.679574},
+	{Name: "Turks and Caicos Is.", FormalName: "Turks and Caicos Islands", Abbrev: "T.C. Is.", NameAlt: "", Population: 35446, GDP: 0, ISO2: "TC", ISO3: "TCA", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -71.797928, LabelY: 21.694025},
+	{Name: "Tuvalu", FormalName: "Tuvalu", Abbrev: "Tuva.", NameAlt: "", Population: 11646, GDP: 0, ISO2: "TV", ISO3: "TUV", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: 179.198566, LabelY: -7.109535},
+	{Name: "St. Vincent and the Grenadines", FormalName: "Saint Vincent and the Grenadines", Abbrev: "St. V.G.", NameAlt: "", Population: 110211, GDP: 0, ISO2: "VC", ISO3: "VCT", Continent: "Americas", RegionUN: "Americas", Subregion: "Caribbean", RegionWB: "Latin America & Caribbean", LabelX: -61.287228, LabelY: 12.984305},
+	{Name: "Wallis and Futuna Is.", FormalName: "Wallis and Futuna Islands", Abbrev: "W.F. Is.", NameAlt: "", Population: 15289, GDP: 0, ISO2: "WF", ISO3: "WLF", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: -177.156097, LabelY: -13.768752},
+	{Name: "Samoa", FormalName: "Independent State of Samoa", Abbrev: "Samoa", NameAlt: "", Population: 196440, GDP: 0, ISO2: "WS", ISO3: "WSM", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: -172.104629, LabelY: -13.759029},
+	{Name: "Mayotte", FormalName: "Mayotte", Abbrev: "May.", NameAlt: "", Population: 270372, GDP: 0, ISO2: "YT", ISO3: "MYT", Continent: "Africa", RegionUN: "Africa", Subregion: "Eastern Africa", RegionWB: "Sub-Saharan Africa", LabelX: 45.166244, LabelY: -12.8275},
+	{Name: "Faroe Is.", FormalName: "Faroe Islands", Abbrev: "F. Is.", NameAlt: "", Population: 48678, GDP: 0, ISO2: "FO", ISO3: "FRO", Continent: "Europe", RegionUN: "Europe", Subregion: "Northern Europe", RegionWB: "Europe & Central Asia", LabelX: -6.911806, LabelY: 61.892635},
+	{Name: "Tonga", FormalName: "Kingdom of Tonga", Abbrev: "Tonga", NameAlt: "", Population: 106501, GDP: 0, ISO2: "TO", ISO3: "TON", Continent: "Oceania", RegionUN: "Oceania", Subregion: "Polynesia", RegionWB: "East Asia & Pacific", LabelX: -175.198242, LabelY: -21.178986}}
 
 var goguessaltnames = []string{"East Timor", "Islas Malvinas", "Swaziland", "\u010cesko"}
 
-var goguessiso2 = []string{"CR", "NI", "HT", "DO", "SV", "GT", "CU", "HN", "US", "CA", "MX", "BZ", "PA", "GL", "BS", "TT", "PR", "JM", "ID", "MY", "CY", "IN", "CN", "IL", "PS", "LB", "SY", "KR", "KP", "BT", "OM", "UZ", "KZ", "TJ", "MN", "VN", "KH", "AE", "GE", "AZ", "TR", "LA", "KG", "AM", "IQ", "IR", "QA", "SA", "PK", "TH", "KW", "TL", "BN", "MM", "BD", "AF", "TM", "JO", "NP", "YE", "-99", "PH", "LK", "CN-TW", "JP", "CL", "BO", "PE", "AR", "SR", "GY", "BR", "UY", "EC", "CO", "PY", "VE", "FK", "ET", "SS", "SO", "KE", "MW", "TZ", "-99", "MA", "EH", "CG", "CD", "NA", "ZA", "LY", "TN", "ZM", "SL", "GN", "LR", "CF", "SD", "DJ", "ER", "CI", "ML", "SN", "NG", "BJ", "AO", "BW", "ZW", "TD", "DZ", "MZ", "SZ", "BI", "RW", "UG", "LS", "CM", "GA", "NE", "BF", "TG", "GH", "GW", "EG", "MR", "GQ", "GM", "MG", "-99", "UA", "BY", "LT", "RU", "CZ", "DE", "EE", "LV", "-99", "SE", "FI", "LU", "BE", "MK", "AL", "-99", "ES", "DK", "RO", "HU", "SK", "PL", "IE", "GB", "GR", "AT", "IT", "CH", "NL", "RS", "HR", "SI", "BG", "ME", "BA", "PT", "MD", "IS", "PG", "AU", "FJ", "NZ", "NC", "SB", "VU", "AQ", "TF"}
-var goguessiso3 = []string{"CRI", "NIC", "HTI", "DOM", "SLV", "GTM", "CUB", "HND", "USA", "CAN", "MEX", "BLZ", "PAN", "GRL", "BHS", "TTO", "PRI", "JAM", "IDN", "MYS", "CYP", "IND", "CHN", "ISR", "PSE", "LBN", "SYR", "KOR", "PRK", "BTN", "OMN", "UZB", "KAZ", "TJK", "MNG", "VNM", "KHM", "ARE", "GEO", "AZE", "TUR", "LAO", "KGZ", "ARM", "IRQ", "IRN", "QAT", "SAU", "PAK", "THA", "KWT", "TLS", "BRN", "MMR", "BGD", "AFG", "TKM", "JOR", "NPL", "YEM", "-99", "PHL", "LKA", "TWN", "JPN", "CHL", "BOL", "PER", "ARG", "SUR", "GUY", "BRA", "URY", "ECU", "COL", "PRY", "VEN", "FLK", "ETH", "SSD", "SOM", "KEN", "MWI", "TZA", "-99", "MAR", "ESH", "COG", "COD", "NAM", "ZAF", "LBY", "TUN", "ZMB", "SLE", "GIN", "LBR", "CAF", "SDN", "DJI", "ERI", "CIV", "MLI", "SEN", "NGA", "BEN", "AGO", "BWA", "ZWE", "TCD", "DZA", "MOZ", "SWZ", "BDI", "RWA", "UGA", "LSO", "CMR", "GAB", "NER", "BFA", "TGO", "GHA", "GNB", "EGY", "MRT", "GNQ", "GMB", "MDG", "-99", "UKR", "BLR", "LTU", "RUS", "CZE", "DEU", "EST", "LVA", "-99", "SWE", "FIN", "LUX", "BEL", "MKD", "ALB", "-99", "ESP", "DNK", "ROU", "HUN", "SVK", "POL", "IRL", "GBR", "GRC", "AUT", "ITA", "CHE", "NLD", "SRB", "HRV", "SVN", "BGR", "MNE", "BIH", "PRT", "MDA", "ISL", "PNG", "AUS", "FJI", "NZL", "NCL", "SLB", "VUT", "ATA", "ATF"}
+var goguessiso2 = []string{"CR", "NI", "HT", "DO", "SV", "GT", "CU", "HN", "US", "CA", "MX", "BZ", "PA", "GL", "BS", "TT", "PR", "JM", "ID", "MY", "CY", "IN", "CN", "IL", "PS", "LB", "SY", "KR", "KP", "BT", "OM", "UZ",
+	"KZ", "TJ", "MN", "VN", "KH", "AE", "GE", "AZ", "TR", "LA", "KG", "AM", "IQ", "IR", "QA", "SA", "PK", "TH",
+	"KW", "TL", "BN", "MM", "BD", "AF", "TM", "JO", "NP", "YE", "-99", "PH", "LK", "CN-TW", "JP", "CL", "BO", "PE",
+	"AR", "SR", "GY", "BR", "UY", "EC", "CO", "PY", "VE", "FK", "ET", "SS", "SO", "KE", "MW", "TZ", "-99", "MA", "EH",
+	"CG", "CD", "NA", "ZA", "LY", "TN", "ZM", "SL", "GN", "LR", "CF", "SD", "DJ", "ER", "CI", "ML", "SN", "NG", "BJ",
+	"AO", "BW", "ZW", "TD", "DZ", "MZ", "SZ", "BI", "RW", "UG", "LS", "CM", "GA", "NE", "BF", "TG", "GH", "GW", "EG",
+	"MR", "GQ", "GM", "MG", "-99", "UA", "BY", "LT", "RU", "CZ", "DE", "EE", "LV", "-99", "SE", "FI", "LU", "BE", "MK",
+	"AL", "-99", "ES", "DK", "RO", "HU", "SK", "PL", "IE", "GB", "GR", "AT", "IT", "CH", "NL", "RS", "HR", "SI", "BG",
+	"ME", "BA", "PT", "MD", "IS", "PG", "AU", "FJ", "NZ", "NC", "SB", "VU", "AQ", "TF", "ZZ", "SG", "MU", "MT", "CV", "HK", "AD", "AI",
+	"ST"}
+
+var goguessiso3 = []string{"CRI", "NIC", "HTI", "DOM", "SLV", "GTM", "CUB", "HND", "USA", "CAN", "MEX", "BLZ", "PAN",
+	"GRL", "BHS", "TTO", "PRI", "JAM", "IDN", "MYS", "CYP", "IND", "CHN", "ISR", "PSE", "LBN", "SYR", "KOR", "PRK", "BTN", "OMN",
+	"UZB", "KAZ", "TJK", "MNG", "VNM", "KHM", "ARE", "GEO", "AZE", "TUR", "LAO", "KGZ", "ARM", "IRQ", "IRN", "QAT", "SAU", "PAK",
+	"THA", "KWT", "TLS", "BRN", "MMR", "BGD", "AFG", "TKM", "JOR", "NPL", "YEM", "-99", "PHL", "LKA", "TWN", "JPN", "CHL", "BOL",
+	"PER", "ARG", "SUR", "GUY", "BRA", "URY", "ECU", "COL", "PRY", "VEN", "FLK", "ETH", "SSD", "SOM", "KEN", "MWI", "TZA", "-99",
+	"MAR", "ESH", "COG", "COD", "NAM", "ZAF", "LBY", "TUN", "ZMB", "SLE", "GIN", "LBR", "CAF", "SDN", "DJI", "ERI", "CIV", "MLI",
+	"SEN", "NGA", "BEN", "AGO", "BWA", "ZWE", "TCD", "DZA", "MOZ", "SWZ", "BDI", "RWA", "UGA", "LSO", "CMR", "GAB", "NER", "BFA",
+	"TGO", "GHA", "GNB", "EGY", "MRT", "GNQ", "GMB", "MDG", "-99", "UKR", "BLR", "LTU", "RUS", "CZE", "DEU", "EST", "LVA", "-99",
+	"SWE", "FIN", "LUX", "BEL", "MKD", "ALB", "-99", "ESP", "DNK", "ROU", "HUN", "SVK", "POL", "IRL", "GBR", "GRC", "AUT", "ITA",
+	"CHE", "NLD", "SRB", "HRV", "SVN", "BGR", "MNE", "BIH", "PRT", "MDA", "ISL", "PNG", "AUS", "FJI", "NZL", "NCL", "SLB", "VUT",
+	"ATA", "ATF", "ZZZ", "SGP", "MUS", "MLT", "CPV", "HKG", "AND", "AIA", "STP"}
 
 var goguessFullnames = []string{"Republic of Costa Rica", "Republic of Nicaragua", "Republic of Haiti", "Dominican Republic",
 	"Republic of El Salvador", "Republic of Guatemala", "Republic of Cuba", "Republic of Honduras",
@@ -244,7 +307,7 @@ var goguessFullnames = []string{"Republic of Costa Rica", "Republic of Nicaragua
 	"Hellenic Republic", "Republic of Austria", "Italian Republic", "Swiss Confederation", "Kingdom of the Netherlands", "Republic of Serbia",
 	"Republic of Croatia", "Republic of Slovenia", "Republic of Bulgaria", "Montenegro", "Bosnia and Herzegovina", "Portuguese Republic",
 	"Republic of Moldova", "Republic of Iceland", "Independent State of Papua New Guinea", "Commonwealth of Australia", "Republic of Fiji",
-	"New Zealand", "New Caledonia", "", "Republic of Vanuatu", "", "Territory of the French Southern and Antarctic Lands"}
+	"New Zealand", "New Caledonia", "", "Republic of Vanuatu", "", "Territory of the French Southern and Antarctic Lands", "Rest of World", "Republic of Singapore", "Republic of Mauritius"}
 
 var goguessCountrylist = []string{"Costa Rica", "Nicaragua", "Haiti", "Dominican Rep.", "El Salvador", "Guatemala",
 	"Cuba", "Honduras", "United States", "Canada", "Mexico", "Belize", "Panama",
@@ -274,11 +337,31 @@ var goguessCountrylist = []string{"Costa Rica", "Nicaragua", "Haiti", "Dominican
 	"Switzerland", "Netherlands", "Serbia", "Croatia", "Slovenia", "Bulgaria",
 	"Montenegro", "Bosnia and Herz.", "Portugal", "Moldova", "Iceland",
 	"Papua New Guinea", "Australia", "Fiji", "New Zealand", "New Caledonia",
-	"Solomon Is.", "Vanuatu", "Antarctica", "Fr. S. Antarctic Lands"}
+	"Solomon Is.", "Vanuatu", "Antarctica", "Fr. S. Antarctic Lands", "Rest of World",
+	"Singapore", "Mauritius", "Malta", "Cabo Verde", "Andorra", "Anguilla", "Sao Tome and Principe"}
 
-// ######################################################################
-// Return the country by ISO2
-// ######################################################################
+// -------------------------------------------------------------------------
+// Create the quick iso2 lookup
+// -------------------------------------------------------------------------
+func makeISO2LUT() (map[string]string, map[string]string) {
+
+	iso2lut := make(map[string]string, 0)
+	countrylut := make(map[string]string, 0)
+
+	for _, c := range goguesscountries {
+
+		iso2 := strings.ToLower(c.ISO2)
+		country := c.Name
+
+		iso2lut[iso2] = country
+		countrylut[country] = iso2
+	}
+
+	return countrylut, iso2lut
+
+}
+
+// -------------------------------------------------------------------------
 func Iso2(code string) (Country, error) {
 
 	var outcountry Country
@@ -292,9 +375,6 @@ func Iso2(code string) (Country, error) {
 	return outcountry, errors.New("ISO2 not matched")
 }
 
-// ######################################################################
-// Return the country by ISO3
-// ######################################################################
 func Iso3(code string) (Country, error) {
 
 	var outcountry Country
@@ -306,60 +386,6 @@ func Iso3(code string) (Country, error) {
 		}
 	}
 	return outcountry, errors.New("ISO3 not matched")
-}
-
-// ######################################################################
-// Return the country by Name
-// ######################################################################
-func CountryByName(name string) (Country, error) {
-
-	var outcountry Country
-
-	name = strings.ToLower(name)
-
-	for _, c := range goguesscountries {
-		if strings.ToLower(c.Name) == name {
-			return c, nil
-		}
-	}
-	return outcountry, errors.New("Name not matched")
-
-}
-
-// ######################################################################
-// Return the country by Name
-// ######################################################################
-func CountryByFormalName(name string) (Country, error) {
-
-	var outcountry Country
-
-	name = strings.ToLower(name)
-
-	for _, c := range goguesscountries {
-		if strings.ToLower(c.FormalName) == name {
-			return c, nil
-		}
-	}
-	return outcountry, errors.New("Formal not matched")
-
-}
-
-// ######################################################################
-// Return the country by Name
-// ######################################################################
-func CountryByAltName(name string) (Country, error) {
-
-	var outcountry Country
-
-	name = strings.ToLower(name)
-
-	for _, c := range goguesscountries {
-		if strings.ToLower(c.NameAlt) == name {
-			return c, nil
-		}
-	}
-	return outcountry, errors.New("alt name not matched")
-
 }
 
 // ##########################################################################
@@ -395,46 +421,11 @@ func GuessCountry(name string) (Country, error) {
 
 	// need to do some fuzzy searches
 
-	// Check the common names
 	namematch := fuzzy.RankFindFold(name, goguessCountrylist)
 	sort.Sort(namematch)
-
-	// how many elements in namematch?
-	numMatches := len(namematch)
-	if numMatches == 1 {
-		element := namematch[0]
-		outcountry, err := CountryByName(element.Target)
-		if err == nil {
-			return outcountry, nil
-		}
-	}
-
-	// Check the formal common names
-	namematch = fuzzy.RankFindFold(name, goguessFullnames)
-	sort.Sort(namematch)
-
-	// how many elements in namematch?
-	numMatches = len(namematch)
-	if numMatches == 1 {
-		element := namematch[0]
-		outcountry, err := CountryByFormalName(element.Target)
-		if err == nil {
-			return outcountry, nil
-		}
-	}
-
-	// Check the alternative names
-	namematch = fuzzy.RankFindFold(name, goguessaltnames)
-	sort.Sort(namematch)
-
-	// how many elements in namematch?
-	numMatches = len(namematch)
-	if numMatches == 1 {
-		element := namematch[0]
-		outcountry, err := CountryByAltName(element.Target)
-		if err == nil {
-			return outcountry, nil
-		}
+	// check to see if the top match is perfect
+	for _, n := range namematch {
+		fmt.Println(n.Source, n.Target, n.Distance)
 	}
 
 	return outcountry, nil
