@@ -53,12 +53,12 @@ func TestGuessCountryAliases(t *testing.T) {
 		t.Fatalf("expected Myanmar, got %q", burma.Name)
 	}
 
-	myramar, err := GuessCountry("Myramar")
+	myanmarTypoAlias, err := GuessCountry("Myramar")
 	if err != nil {
 		t.Fatalf("expected typo alias lookup to succeed: %v", err)
 	}
-	if myramar.ISO2 != "MM" {
-		t.Fatalf("expected MM, got %q", myramar.ISO2)
+	if myanmarTypoAlias.ISO2 != "MM" {
+		t.Fatalf("expected MM, got %q", myanmarTypoAlias.ISO2)
 	}
 }
 
