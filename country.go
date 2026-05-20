@@ -2,10 +2,9 @@ package goguessocuntry
 
 import (
 	"errors"
-	"fmt"
 	"slices"
-	"sort"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/lithammer/fuzzysearch/fuzzy"
@@ -388,45 +387,172 @@ func Iso3(code string) (Country, error) {
 	return outcountry, errors.New("ISO3 not matched")
 }
 
+var countryAliasISO2 = map[string]string{
+	"britain":      "GB",
+	"greatbritain": "GB",
+	"uk":           "GB",
+	"england":      "GB",
+	"tw":           "CN-TW",
+}
+
+func normalizeLookup(s string) string {
+	s = strings.TrimSpace(strings.ToLower(s))
+
+	var b strings.Builder
+	b.Grow(len(s))
+
+	for _, r := range s {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			b.WriteRune(r)
+		}
+	}
+
+	return b.String()
+}
+
+func countryLookupFields(c Country) []string {
+	return []string{
+		c.Name,
+		c.FormalName,
+		c.Abbrev,
+		c.NameAlt,
+		c.ISO2,
+		c.ISO3,
+	}
+}
+
+// Countries returns the complete built-in country dataset.
+func Countries() []Country {
+	return slices.Clone(goguesscountries)
+}
+
+// CountryAttribute returns a specific attribute value from a Country.
+func CountryAttribute(country Country, attribute string) (any, error) {
+	switch strings.ToLower(strings.TrimSpace(attribute)) {
+	case "name", "name_short":
+		return country.Name, nil
+	case "formal_name", "name_official":
+		return country.FormalName, nil
+	case "abbrev":
+		return country.Abbrev, nil
+	case "name_alt":
+		return country.NameAlt, nil
+	case "population":
+		return country.Population, nil
+	case "gdp":
+		return country.GDP, nil
+	case "iso2":
+		return country.ISO2, nil
+	case "iso3":
+		return country.ISO3, nil
+	case "continent":
+		return country.Continent, nil
+	case "region_un":
+		return country.RegionUN, nil
+	case "subregion":
+		return country.Subregion, nil
+	case "region_wb":
+		return country.RegionWB, nil
+	case "label_x":
+		return country.LabelX, nil
+	case "label_y":
+		return country.LabelY, nil
+	default:
+		return nil, errors.New("unknown attribute")
+	}
+}
+
+// GuessCountryAttribute looks up a country and returns an attribute value,
+// falling back to defaultValue if no match or invalid attribute is found.
+func GuessCountryAttribute(name string, attribute string, defaultValue any) any {
+	country, err := GuessCountry(name)
+	if err != nil {
+		return defaultValue
+	}
+
+	value, err := CountryAttribute(country, attribute)
+	if err != nil {
+		return defaultValue
+	}
+
+	return value
+}
+
 // ##########################################################################
 // The GuessCountry function - give it a string and it will return the best matched struct
 // ##########################################################################
 func GuessCountry(name string) (Country, error) {
 
 	var outcountry Country
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return outcountry, errors.New("country not matched")
+	}
+
+	normalized := normalizeLookup(name)
+	if iso2, ok := countryAliasISO2[normalized]; ok {
+		if c, err := Iso2(iso2); err == nil {
+			return c, nil
+		}
+	}
+
 	stringlen := utf8.RuneCountInString(name)
+	if stringlen == 2 || stringlen == 5 {
+		if c, err := Iso2(name); err == nil {
+			return c, nil
+		}
+	}
 
-	// check to see if string is 2 characters long
-	if stringlen == 2 { // is it an iso2?
+	if stringlen == 3 {
+		if c, err := Iso3(name); err == nil {
+			return c, nil
+		}
+	}
 
-		name = strings.ToUpper(name)
-		if slices.Contains(goguessiso2, name) {
-			outcountry, err := Iso2(name)
-			if err == nil {
-				return outcountry, nil
+	for _, c := range goguesscountries {
+		for _, field := range countryLookupFields(c) {
+			if field == "" {
+				continue
+			}
+			if strings.EqualFold(name, field) || normalized == normalizeLookup(field) {
+				return c, nil
 			}
 		}
 	}
 
-	// check to see if string is 3 characters long
-	if stringlen == 3 { // is it an iso3?
-		name = strings.ToUpper(name)
-		if slices.Contains(goguessiso3, name) {
-			outcountry, err := Iso3(name)
-			if err == nil {
-				return outcountry, nil
+	bestIdx := -1
+	bestScore := 1.0
+	for i, c := range goguesscountries {
+		for _, field := range countryLookupFields(c) {
+			if field == "" {
+				continue
+			}
+
+			target := normalizeLookup(field)
+			if target == "" {
+				continue
+			}
+
+			maxLen := max(utf8.RuneCountInString(normalized), utf8.RuneCountInString(target))
+			if maxLen == 0 {
+				continue
+			}
+
+			score := float64(fuzzy.LevenshteinDistance(normalized, target)) / float64(maxLen)
+			if strings.Contains(target, normalized) || strings.Contains(normalized, target) {
+				score -= 0.15
+			}
+
+			if score < bestScore {
+				bestScore = score
+				bestIdx = i
 			}
 		}
 	}
 
-	// need to do some fuzzy searches
-
-	namematch := fuzzy.RankFindFold(name, goguessCountrylist)
-	sort.Sort(namematch)
-	// check to see if the top match is perfect
-	for _, n := range namematch {
-		fmt.Println(n.Source, n.Target, n.Distance)
+	if bestIdx >= 0 && bestScore <= 0.40 {
+		return goguesscountries[bestIdx], nil
 	}
 
-	return outcountry, nil
+	return outcountry, errors.New("country not matched")
 }
