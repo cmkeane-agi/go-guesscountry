@@ -15,8 +15,8 @@ func TestGuessCountryISOAndNames(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected ISO3 lookup to succeed: %v", err)
 	}
-	if iso3.Name != "Taiwan" {
-		t.Fatalf("expected Taiwan, got %q", iso3.Name)
+	if iso3.ISO2 != "TW" {
+		t.Fatalf("expected TW, got %q", iso3.ISO2)
 	}
 
 	formal, err := GuessCountry("Czech Republic")
@@ -41,8 +41,24 @@ func TestGuessCountryAliases(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected alias lookup to succeed: %v", err)
 	}
-	if taiwan.Name != "Taiwan" {
-		t.Fatalf("expected Taiwan, got %q", taiwan.Name)
+	if taiwan.ISO2 != "TW" {
+		t.Fatalf("expected TW, got %q", taiwan.ISO2)
+	}
+
+	burma, err := GuessCountry("Burma")
+	if err != nil {
+		t.Fatalf("expected historical alias lookup to succeed: %v", err)
+	}
+	if burma.Name != "Myanmar" {
+		t.Fatalf("expected Myanmar, got %q", burma.Name)
+	}
+
+	myramar, err := GuessCountry("Myramar")
+	if err != nil {
+		t.Fatalf("expected typo alias lookup to succeed: %v", err)
+	}
+	if myramar.ISO2 != "MM" {
+		t.Fatalf("expected MM, got %q", myramar.ISO2)
 	}
 }
 
@@ -85,5 +101,24 @@ func TestCountriesReturnsCopy(t *testing.T) {
 
 	if goguesscountries[0].Name != original {
 		t.Fatal("expected Countries() to return a copy, not mutate internal data")
+	}
+}
+
+func TestCountriesUseOfficialISOAlpha2Codes(t *testing.T) {
+	countries := Countries()
+	if len(countries) != 249 {
+		t.Fatalf("expected 249 official ISO countries, got %d", len(countries))
+	}
+
+	for _, c := range countries {
+		if len(c.ISO2) != 2 {
+			t.Fatalf("expected 2-letter ISO2 code for %q, got %q", c.Name, c.ISO2)
+		}
+		if c.ISO2 == "-99" {
+			t.Fatalf("unexpected non-ISO code for %q", c.Name)
+		}
+		if len(c.ISO3) != 3 {
+			t.Fatalf("expected 3-letter ISO3 code for %q, got %q", c.Name, c.ISO3)
+		}
 	}
 }
